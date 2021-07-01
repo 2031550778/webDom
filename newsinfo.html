@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+    <div class="body">
+
+    </div>
+
+
+
+    <script>
+        $(function(){
+            var url=location.search;
+            var str=url.substr(1,url.length);
+            var arr=str.split("=");
+            console.log(arr);
+            $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    data: { username: "ljj", userpwd: 12345678, userclass: 53, type: 2, m:arr[1]},
+                    url: "http://www.qhdlink-student.top/student/newsinfo.php",
+                    success: function (data) {
+                        console.log(data);
+                        $str1='';
+                        $.each(data,function(index,value){
+                            $str1+='<h2 style="text-align: center;">'+value.title_news+'</h2><p style="text-align: center;">时间:'+value.time_news+'</p><div>'+value.info_news+'</div>';
+                        })
+                        $(".body").append($str1);
+                    }
+                })
+        })
+    </script>
+</body>
+</html>

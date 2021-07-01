@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="easyui/demo/demo.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/color.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/xyy.css">
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="easyui/easyloader.js"></script>
+
+    <script type="text/javascript">
+        var url;
+        function newUser() {
+            $('#dlg').dialog('open').dialog('setTitle', '新增用户');
+            $('#fm').form('clear');
+            url = 'save_user.php';
+        }
+        function editUser() {
+            var row = $('#dg').datagrid('getSelected');
+            if (row) {
+                $('#dlg').dialog('open').dialog('setTitle', '编辑用户');
+                $('#fm').form('load', row);
+                url = 'update_user.php?id=' + row.id;
+            }
+        }
+        function saveUser() {
+            $('#fm').form('submit', {
+                url: url,
+                onSubmit: function () {
+                    return $(this).form('validate');
+                },
+                success: function (result) {
+                    var result = eval('(' + result + ')');
+                    if (result.success) {
+                        $('#dlg').dialog('close');		// close the dialog
+                        $('#dg').datagrid('reload');	// reload the user data
+                    } else {
+                        $.messager.show({
+                            title: 'Error',
+                            msg: result.msg
+                        });
+                    }
+                }
+            });
+        }
+        function removeUser() {
+            var row = $('#dg').datagrid('getSelected');
+            if (row) {
+                $.messager.confirm('Confirm', 'Are you sure you want to remove this user?', function (r) {
+                    if (r) {
+                        $.post('remove_user.php', { id: row.id }, function (result) {
+                            if (result.success) {
+                                $('#dg').datagrid('reload');	// reload the user data
+                            } else {
+                                $.messager.show({	// show error message
+                                    title: 'Error',
+                                    msg: result.msg
+                                });
+                            }
+                        }, 'json');
+                    }
+                });
+            }
+        }
+    </script>
+    <style>
+        .panel-header {
+            background-color: #192b3b;
+        }
+        .panel-title {
+            color: azure;
+        }
+    </style>
+</head>
+
+<body>
+    <table id="dg"></table>
+    <div id="toolbar">
+        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newUser()">新 增</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">编 辑</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeUser()">移 除</a>
+        <a href="#" class="easyui-linkbutton" plain="true">
+            <span>丨选择模式: </span>
+            <select onchange="$('#dg').datagrid({singleSelect:(this.value==1)})">
+                <option value="1">单选</option>
+                <option value="0">全选</option>
+            </select>
+        </a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="addTab('新增用户','add.html')">新增teg</a>
+        <a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="addTab('编辑用户','edit.html')">编辑teg</a>
+    </div>
+            <div id="dlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px" closed="true"
+                buttons="#dlg-buttons">
+                <div class="ftitle">用户 信息</div>
+                <form id="fm" method="post" novalidate>
+                    <div class="fitem">
+                        <label>编 号:</label>
+                        <input name="firstname" class="easyui-validatebox" required="true">
+                    </div>
+                    <div class="fitem">
+                        <label>名 字:</label>
+                        <input name="lastname" class="easyui-validatebox" required="true">
+                    </div>
+                    <div class="fitem">
+                        <label>电 话:</label>
+                        <input name="phone">
+                    </div>
+                    <div class="fitem">
+                        <label>地 址:</label>
+                        <input name="add" class="easyui-validatebox" validType="email">
+                    </div>
+                </form>
+            </div>
+            <div id="dlg-buttons">
+                <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveUser()">保存</a>
+                <a href="#" class="easyui-linkbutton" iconCls="icon-cancel"
+                    onclick="javascript:$('#dlg').dialog('close')">关闭</a>
+            </div>
+        </div>
+
+    <script>
+        // var pager = $('#dg').datagrid('getPager');    // get the pager of datagrid
+        // pager.pagination({
+        //     showPageList: false,
+        //     buttons: [{
+        //         iconCls: 'icon-search',
+        //         handler: function () {
+        //             alert('search');
+        //         }
+        //     }, {
+        //         iconCls: 'icon-add',
+        //         handler: function () {
+        //             alert('add');
+        //         }
+        //     }, {
+        //         iconCls: 'icon-edit',
+        //         handler: function () {
+        //             alert('edit');
+        //         }
+        //     }],
+        //     onBeforeRefresh: function () {
+        //         alert('before refresh');
+        //         return true;
+        //     }
+        // });
+        // $(function () {
+        // if (localStorage.getItem("tokenc") == "ok") {
+            if (localStorage.getItem("tokenc") == "ok") {    
+        $(function(){    
+        $('#dg').datagrid({
+            title: '最新消息',
+            iconCls: 'icon-dingdan',
+            fit: true,
+            idField:'id',
+            fitColumns: true,
+            collapsible:true,
+            rownumbers: false,
+            pagination: true,
+            singleSelect: true,
+            border: false,
+            striped: true,
+            toolbar: '#toolbar',
+            columns: [[{
+                field: 'unid',
+                title: 'UNID',
+                fixed:true,
+                align: 'center',
+                checkbox: true
+            }, {
+                field: 'id',
+                title: '编号',
+                fixed:true,
+                align: 'center'
+            }, {
+                field: 'name',
+                title: '标题',
+                width: 200,
+                align: 'center'
+            }, {
+                field: 'tel',
+                title: '时间',
+                width:50,
+                align: 'center'
+            }, {
+                field: 'add',
+                title: '查看',
+                width:50,
+                align: 'center'
+            }]]
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            data: { username: "ljj", userpwd: 12345678, userclass: 53, type: 2 },
+            url: "http://www.qhdlink-student.top/student/newsa.php",
+            success: function (data) {
+                console.log(data);
+                $str = '';
+                $i = 0;
+            
+                $.each(data, function (index, value) {
+                    var a = {
+                        'id': value.id_news,
+                        'name': value.title_news,
+                        'tel': value.time_news,
+                        'add': '<a href="newsinfo.html?id='+value.id_news+'">查看</a>'
+                    };
+                    $('#dg').datagrid('appendRow', a);
+                })
+
+            }
+        })
+            // }
+        // })
+    })
+} else {
+                alert("重新登录");
+                location.href = "denglu.html";
+            }
+    </script>
+</body>
+
+</html>

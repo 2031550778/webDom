@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Custom TextBox - jQuery EasyUI Demo</title>
+    <link rel="stylesheet" type="text/css" href="easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="easyui/demo/demo.css">
+    <script type="text/javascript" src="easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+    <style>
+        body {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .panel {
+            margin: 0 auto;
+            margin-top: 12%;
+        }
+
+        .panel-body {
+            background-color: transparent;
+            border-width: 0px;
+            position: relative;
+        }
+
+        .panel-header {
+            border-width: 0px;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        .passwordbox-open {
+            background: url('easyui/themes/default/images/passwordbox_open.png') no-repeat center center;
+        }
+
+        .passwordbox-close {
+            background: url('easyui/themes/default/images/passwordbox_close.png') no-repeat center center;
+        }
+
+        .l-btn {
+            background: #19aa8d;
+        }
+
+        .l-btn:hover {
+            background: #12836c;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="width: 100%; height: 100%; background-color: #eeeeee;; position: absolute;">
+        <img src="img/logo1.png" alt=""
+            style="display: block; position: absolute; left: 50%; margin-left: -50px; width: 100px; top: 10%;">
+        <div class="easyui-panel" title="Login to system" style="width:450px;padding:30px 70px 20px 70px">
+            <h2 style="text-align: center;">欢迎使用管理系统</h2>
+            <div style="margin-bottom:20px">
+                <span style="position: absolute; left: 50px; font-size: 30px; margin-top: -3px; color: #000000;" id="usernamemsg">﹡</span>
+                <input class="easyui-textbox" style="width:100%;height:40px;padding:12px"
+                    data-options="prompt:'用户名',iconCls:'icon-man',iconWidth:38">
+            </div>
+            <div style="margin-bottom:20px">
+                <span style="position: absolute; left: 50px; font-size: 30px; margin-top: -3px; color: #000000;" id="userclassmsg">﹡</span>
+                <input class="easyui-textbox" style="width:100%;height:40px;padding:12px;"
+                    data-options="prompt:'用户名',iconCls:'icon-man',iconWidth:38">
+            </div>
+            <div style="margin-bottom:20px">
+                <span style="position: absolute; left: 50px; font-size: 30px; margin-top: -3px; color: #000000;" id="userpwdmsg">﹡</span>
+                <input id="pass" class="easyui-passwordbox" prompt="Password" iconWidth="38"
+                    style="width:100%;height:40px;padding:12px">
+            </div>
+            <div>
+                <a href="#" class="easyui-linkbutton" style="padding:5px 0px;width:100%;" id="sub">
+                    <span style="font-size:14px;">Login</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    $(function(){
+        $('#pass').passwordbox({
+            inputEvents: $.extend({}, $.fn.passwordbox.defaults.inputEvents, {
+                keypress: function (e) {
+                    var char = String.fromCharCode(e.which);
+                    $('#viewer').html(char).fadeIn(200, function () {
+                        $(this).fadeOut();
+                    });
+                }
+            })
+        })
+        document.getElementById("_easyui_textbox_input1").onkeyup = function () {
+            var namereg = /^[a-z]{1,}$/;
+            if (namereg.test(this.value)) {
+                
+                document.getElementById("usernamemsg").style.color = "#12836c";
+            } else {
+                document.getElementById("usernamemsg").style.color = "red";
+                
+            }
+        }
+        document.getElementById("_easyui_textbox_input2").onkeyup = function () {
+            var namereg = /^\d{1,}$/;
+            if (namereg.test(this.value)) {
+                document.getElementById("userclassmsg").style.color = "#12836c";
+            } else {
+                document.getElementById("userclassmsg").style.color = "red";
+            }
+        }
+        document.getElementById("_easyui_textbox_input4").onkeyup = function () {
+            var namereg = /^\d{8}$/;
+            if (namereg.test(this.value)) {
+                document.getElementById("userpwdmsg").style.color = "#12836c";
+            } else {
+                document.getElementById("userpwdmsg").style.color = "red";
+            }
+        }
+        document.getElementById("sub").onclick = function () {
+            if (document.getElementById("usernamemsg").style.color != "rgb(18, 131, 108)") {
+                document.getElementById("_easyui_textbox_input1").focus();
+                return false;
+            }
+            if (document.getElementById("userclassmsg").style.color != "rgb(18, 131, 108)") {
+                document.getElementById("_easyui_textbox_input2").focus();
+                return false;
+            }
+            if (document.getElementById("userpwdmsg").style.color != "rgb(18, 131, 108)") {
+                document.getElementById("_easyui_textbox_input4").focus();
+                return false;
+            } else {
+
+                $.ajax({
+                    type: "post",
+                    data: { username: $("#_easyui_textbox_input1").val(), userpwd: $("#_easyui_textbox_input4").val(), userclass: $("#_easyui_textbox_input2").val(), type: 2 },
+                    url: "http://www.qhdlink-student.top/student/login.php",
+                    success: function (data) {
+                        console.log(data);
+                        if (data == "ok") {
+                            // setCookie("token",'{tokenc:"'+data+'",aname:"'+$("#username").val()+'"}',1);
+                            localStorage.setItem("tokenc", "ok");
+                            location.href = "index.html";
+
+                        } else {
+                            alert("账号或密码错误");
+                        }
+                    }
+                })
+                return false;
+
+            }
+        }
+        // document.getElementById("ret").onclick = function () {
+        //     document.getElementById("usernamemsg").style.color = "#555555";
+        //     document.getElementById("userclassmsg").style.color = "#555555";
+        //     document.getElementById("userpwdmsg").style.color = "#555555";
+        //     document.getElementById("usernamemsg").innerHTML = "请输入用户名"
+        //     document.getElementById("userclassmsg").innerHTML = "请输入班级号"
+        //     document.getElementById("userpwdmsg").innerHTML = "请输入密码"
+        // }
+    })
+    </script>
+    <style>
+        #viewer {
+            position: relative;
+            padding: 0 60px;
+            top: -70px;
+            font-size: 54px;
+            line-height: 60px;
+        }
+
+    </style>
+</body>
+
+</html>
